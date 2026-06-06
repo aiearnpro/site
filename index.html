@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Protected PDF Viewer</title>
+
+    <style>
+        /* =====================================================
+   GLOBAL STYLES
+===================================================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #0f1117;
+            font-family: Arial, Helvetica, sans-serif;
+
+            /* Prevent text selection where possible */
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+
+        /* =====================================================
+   LOADING SCREEN
+===================================================== */
+        #loader {
+            position: fixed;
+            inset: 0;
+            background: #0f1117;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(255, 255, 255, 0.15);
+            border-top: 5px solid #4f8cff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .loading-text {
+            margin-top: 20px;
+            color: #ffffff;
+            font-size: 16px;
+            letter-spacing: 1px;
+        }
+
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* =====================================================
+   PDF CONTAINER
+===================================================== */
+        #viewer-container {
+            width: 100vw;
+            height: 100vh;
+            background: #111827;
+        }
+
+        /* Fullscreen PDF */
+        #pdfViewer {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+
+        /* =====================================================
+   MOBILE OPTIMIZATION
+===================================================== */
+        @media (max-width: 768px) {
+            .loading-text {
+                font-size: 14px;
+            }
+
+            .spinner {
+                width: 50px;
+                height: 50px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- =====================================================
+     LOADING SCREEN
+===================================================== -->
+    <div id="loader">
+        <div class="spinner"></div>
+        <div class="loading-text">Loading PDF...</div>
+    </div>
+
+    <!-- =====================================================
+     PDF VIEWER CONTAINER
+===================================================== -->
+    <div id="viewer-container">
+
+        <!--
+        PDF embedded from same directory.
+
+        Browser support varies:
+        #toolbar=0      -> Hide toolbar (supported in some browsers)
+        #navpanes=0     -> Hide navigation pane
+        #scrollbar=1    -> Keep scrolling enabled
+        #view=FitH      -> Fit horizontally
+    -->
+        <iframe id="pdfViewer" src="protected_Site.pdf#toolbar=0&navpanes=0&scrollbar=1&view=FitH">
+        </iframe>
+
+    </div>
+
+    <script>
+        /* =====================================================
+           DISABLE RIGHT CLICK
+        ===================================================== */
+        document.addEventListener("contextmenu", function (e) {
+            e.preventDefault();
+        });
+
+        /* =====================================================
+           DISABLE COMMON SHORTCUTS
+        ===================================================== */
+        document.addEventListener("keydown", function (e) {
+
+            const key = e.key.toLowerCase();
+
+            // F12
+            if (e.key === "F12") {
+                e.preventDefault();
+                return false;
+            }
+
+            // Ctrl + S
+            if (e.ctrlKey && key === "s") {
+                e.preventDefault();
+                return false;
+            }
+
+            // Ctrl + P
+            if (e.ctrlKey && key === "p") {
+                e.preventDefault();
+                return false;
+            }
+
+            // Ctrl + U
+            if (e.ctrlKey && key === "u") {
+                e.preventDefault();
+                return false;
+            }
+
+            // Ctrl + Shift + I
+            if (e.ctrlKey && e.shiftKey && key === "i") {
+                e.preventDefault();
+                return false;
+            }
+
+            // Ctrl + Shift + J
+            if (e.ctrlKey && e.shiftKey && key === "j") {
+                e.preventDefault();
+                return false;
+            }
+
+            // Ctrl + Shift + C
+            if (e.ctrlKey && e.shiftKey && key === "c") {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        /* =====================================================
+           PREVENT TEXT DRAGGING / SELECTION
+        ===================================================== */
+        document.addEventListener("dragstart", function (e) {
+            e.preventDefault();
+        });
+
+        document.addEventListener("selectstart", function (e) {
+            e.preventDefault();
+        });
+
+        /* =====================================================
+           HIDE LOADER WHEN PDF LOADS
+        ===================================================== */
+        const pdfViewer = document.getElementById("pdfViewer");
+        const loader = document.getElementById("loader");
+
+        pdfViewer.addEventListener("load", function () {
+            loader.style.opacity = "0";
+
+            setTimeout(() => {
+                loader.style.display = "none";
+            }, 300);
+        });
+
+        /* =====================================================
+           OPTIONAL: BLOCK LONG PRESS ON MOBILE
+        ===================================================== */
+        document.addEventListener(
+            "touchstart",
+            function () { },
+            { passive: true }
+        );
+    </script>
+
+</body>
+
+</html>
